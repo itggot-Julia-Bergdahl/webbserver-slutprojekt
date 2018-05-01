@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+}
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;    
+    justify-content: space-around;
+    background-color: aqua;
+}

@@ -51,4 +51,29 @@ class App < Sinatra::Base
 		end
 		redirect('/')
 	end
+	get '/contacts' do
+		if session[:id]
+			username = db.execute("SELECT name FROM users WHERE id=?", session[:id])
+			added_friends = db.execute("SELECT name, id FROM users WHERE id IN (SELECT b FROM friends WHERE a=? AND relation=1)", session[:id])
+			accepted_friends = db.execute("SELECT name, id FROM users WHERE id IN (SELECT a FROM friends WHERE b=? AND relation=1)", session[:id])
+			friend_list = []
+			accepted_friends.each do |friend|
+				friend_list << friend
+			end
+			added_friends.each do |friend|
+				friend_list << friend
+			end
+			contacts = []
+			requests = db.execute("SELECT id, name FROM users WHERE id IN (SELECT a FROM friends WHERE b=? AND relation=0)", session[:id])
+			your_inf = db.execute("SELECT info, type FROM contact_info WHERE user_id=?", session[:id])
+			slim(:contacts, locals:{contacts:friend_list, name:username, info:your_inf, requests:requests})
+		else
+			session[:error] = "Du är inte inloggad för tillfället"
+			redirect('/')
+		end
+	end
+	get '/logout' do
+		session[:id] = nil
+		redirect("/")
+	end
 end           

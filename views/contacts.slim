@@ -1,0 +1,48 @@
+nav
+    .nav_box
+        h1 inloggad som: #{name[0][0]}
+        form action="/logout" method="get"
+            input type="submit" value="Logga ut"
+    .nav_box
+        form action="/search_user" method="get"
+            input type="text" name="search"
+            input type="submit" value="Sök"
+.main_box
+    form.contact_add action="/contact_info" method="post"
+        input type="text" name="info" placeholder="Kontaktinformation"
+
+        .radios
+            input type="radio" id="contactChoice1" name="contact" value="email"
+                label for="contactChoice1" Email
+
+            input type="radio" id="contactChoice2" name="contact" value="Telefon"
+                label for="contactChoice2" Telefon
+
+            input type="radio" id="contactChoice3" name="contact" value="Post"
+                label for="contactChoice3" Post
+
+            input type="radio" id="contactChoice4" name="contact" value="Other"
+                label for="contactChoice4" Other
+
+        input type="submit" value="Lägg till kontaktinformation"
+    a href="/friends" Vänner
+    .your_inf
+        h3 Din kontaktinformation
+        -info.each do |single|
+            .contact_box
+                p #{single[0]}
+                p #{single[1]} 
+    .friend_requests
+        h3 Vänförfrågningar
+        -requests.each do |request|
+            p =request[0]
+            p =request[1]
+            form action="/accept_friend" method="post"
+                input type="hidden" name="acc_id" value="#{request[0]}"
+                input type="submit" value="Acceptera Vän"
+    .friends
+        h3 Vänner 
+        -contacts.each do |contact|
+            .single_contact
+                p #{contact[0]}
+                p #{contact[1]}
