@@ -1,0 +1,7 @@
+.results
+    -results.each do |user|
+        .result
+            p #{user[0]}
+            form action="/add_friend" method="post"
+                input type="hidden" value="#{user[1]}" name="add"
+                input type="submit" value="lägg till vän"

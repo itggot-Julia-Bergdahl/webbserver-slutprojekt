@@ -76,4 +76,46 @@ class App < Sinatra::Base
 		session[:id] = nil
 		redirect("/")
 	end
+	post '/add_friend' do
+		if session[:id] 
+			if db.execute("SELECT * FROM friends WHERE a=? AND b=?", [session[:id], params[:add]]) == [] and db.execute("SELECT * FROM friends WHERE a=? AND b=?", [params[:add], session[:id]]) == []
+			db.execute("INSERT INTO friends(a, b, relation) VALUES(?,?,?)", [session[:id], params[:add], 0])
+			redirect('/contacts')
+			else
+			session[:error] = "You already have this person as a friend"
+			redirect("/contacts")
+			end
+		else
+			redirect('/')
+		end
+	end
+	post '/accept_friend' do
+		if session[:id]
+			db.execute("UPDATE friends set relation=1 WHERE a=? AND b=?", [params[:acc_id], session[:id]])
+			redirect("/contacts")
+		else
+			redirect("/")
+		end
+	end
+	get '/friends' do
+		if session[:id]
+			added_friends = db.execute("SELECT name, id FROM users WHERE id IN (SELECT b FROM friends WHERE a=? AND relation=1)", session[:id])
+			accepted_friends = db.execute("SELECT name, id FROM users WHERE id IN (SELECT a FROM friends WHERE b=? AND relation=1)", session[:id])
+			friend_list = []
+			accepted_friends.each do |friend|
+				friend_list << friend
+			end
+			added_friends.each do |friend|
+				friend_list << friend
+			end
+			contact_info = []
+			friend_list.each do |friend|
+				contact_info << db.execute("SELECT * FROM contact_info WHERE user_id=?", friend[1])
+			end
+			p contact_info
+			slim(:friends, locals:{contact_info:contact_info, friends:friend_list})
+		else
+			redirect("/")
+		end
+	end
 end           

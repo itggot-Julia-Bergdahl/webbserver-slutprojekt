@@ -1,0 +1,10 @@
+.friend_boi
+    -friends.each do |friend|
+        .single_friend
+            h3 #{friend[0]}:
+            .contact_inf
+                -contact_info.each do |single_contact|
+                    -single_contact.each do |info|
+                        -if info[1] == friend[1]
+                            p #{info[2]}, Typ: #{info[3]}
+
